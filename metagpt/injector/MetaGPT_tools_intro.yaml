@@ -1,0 +1,288 @@
+system_description: |        
+  MetaGPT's RoleZero agent uses tools to execute tasks.      
+  Tools are mapped through tool_execution_map and invoked via JSON commands.  
+  
+form: |  
+  - Strictly follow the JSON format below for outputting modified commands.  
+  - Output ONLY JSON content, no other explanations or comment text.  
+    
+  {{  
+      "command_name": "Plan.append_task",  
+      "args": {{                             
+          "task_id": "1",  
+          "dependent_task_ids": [],  
+          "instruction": "Create PRD",  
+          "assignee": "Alice",  
+          "task_type": "planning"  
+      }}  
+  }}   
+      
+tool_categories:        
+  - category: "File Operations"        
+    description: "Editor tools for reading, writing, and modifying files"   
+    tools:    
+      - name: "Editor.write"    
+        description: "Write complete file content, automatically creates directory if it doesn't exist"   
+        required_params:    
+          - name: "path"    
+            type: "str"    
+            description: "File path (relative to workspace root directory)"    
+          - name: "content"    
+            type: "str"    
+            description: "Complete file content, must include all file contents"    
+                
+      - name: "Editor.read"    
+        description: "Read file content and return FileBlock object"    
+        required_params:    
+          - name: "path"    
+            type: "str"    
+            description: "File path"    
+                
+      - name: "Editor.create_file"    
+        description: "Create new file, automatically creates parent directory if it doesn't exist"   
+        required_params:    
+          - name: "filename"    
+            type: "str"    
+            description: "Filename to create (including path)"    
+                
+      - name: "Editor.edit_file_by_replace"    
+        description: "Replace file content by specifying line number range"   
+        required_params:    
+          - name: "file_name"    
+            type: "str"    
+            description: "File name to edit"    
+          - name: "first_replaced_line_number"    
+            type: "int"    
+            description: "Starting replacement line number (starting from 1)"    
+          - name: "first_replaced_line_content"    
+            type: "str"    
+            description: "Original content of starting line (for verification)"    
+          - name: "last_replaced_line_number"    
+            type: "int"    
+            description: "Ending replacement line number (inclusive)"    
+          - name: "last_replaced_line_content"    
+            type: "str"    
+            description: "Original content of ending line (for verification)"    
+          - name: "new_content"    
+            type: "str"    
+            description: "New content, must comply with PEP8 standards"    
+        note: "This tool is mutually exclusive, only one edit command can be used at a time"    
+                
+      - name: "Editor.insert_content_at_line"    
+        description: "Insert content before specified line number"  
+        required_params:    
+          - name: "file_name"    
+            type: "str"    
+            description: "File name to edit"    
+          - name: "line_number"    
+            type: "int"    
+            description: "Line number for insertion position (starting from 1)"    
+          - name: "insert_content"    
+            type: "str"    
+            description: "Complete code block to insert"    
+        note: "This tool is mutually exclusive, only one edit command can be used at a time"    
+                
+      - name: "Editor.append_file"    
+        description: "Append content to end of file"    
+        required_params:    
+          - name: "path"    
+            type: "str"    
+            description: "File path"    
+          - name: "content"    
+            type: "str"    
+            description: "Content to append"    
+                
+      - name: "Editor.open_file"    
+        description: "Open file and display specified window content (default displays 100 lines)"   
+        required_params:    
+          - name: "path"    
+            type: "str"    
+            description: "File path (prefer absolute path)"    
+        optional_params:    
+          - name: "line_number"    
+            type: "int"    
+            default: 1    
+            description: "Starting line number"    
+          - name: "context_lines"    
+            type: "int"    
+            default: 100    
+            description: "Number of lines to display (maximum 2000)"    
+        note: "This tool is mutually exclusive, only one edit command can be used at a time"    
+                
+      - name: "Editor.goto_line"    
+        description: "Jump to specified line number"    
+        required_params:    
+          - name: "line_number"    
+            type: "int"    
+            description: "Target line number"    
+                
+      - name: "Editor.scroll_down"    
+        description: "Scroll down 100 lines"   
+        required_params: []    
+            
+      - name: "Editor.scroll_up"    
+        description: "Scroll up 100 lines"  
+        required_params: []    
+                
+      - name: "Editor.search_file"    
+        description: "Search for specified content in file"    
+        required_params:    
+          - name: "search_term"    
+            type: "str"    
+            description: "Search term"    
+          - name: "path"    
+            type: "str"    
+            description: "File path"    
+                
+      - name: "Editor.search_dir"    
+        description: "Recursively search content in directory"    
+        required_params:    
+          - name: "search_term"    
+            type: "str"    
+            description: "Search term"    
+          - name: "dir_path"    
+            type: "str"    
+            description: "Directory path"    
+                
+      - name: "Editor.find_file"    
+        description: "Find specified filename in directory"      
+        required_params:    
+          - name: "file_name"    
+            type: "str"    
+            description: "Filename to find"    
+          - name: "dir_path"    
+            type: "str"    
+            description: "Search directory path"    
+            
+  - category: "Web Browsing"        
+    description: "Browser tools for web navigation and interaction"     
+    tools:    
+      - name: "Browser.goto"    
+        description: "Navigate to specified URL"    
+        required_params:    
+          - name: "url"    
+            type: "str"    
+            description: "Target URL"    
+        returns: "SUCCESS, URL: {url} have been loaded."    
+                
+      - name: "Browser.click"    
+        description: "Click element on page"   
+        required_params:    
+          - name: "element_id"    
+            type: "int"    
+            description: "Element ID (from accessibility tree, not CSS selector)"   
+                
+      - name: "Browser.type"    
+        description: "Type text into input field"   
+        required_params:    
+          - name: "element_id"    
+            type: "int"    
+            description: "Element ID of input field"    
+          - name: "content"    
+            type: "str"    
+            description: "Text to input"    
+        optional_params:    
+          - name: "press_enter_after"    
+            type: "bool"    
+            default: false    
+            description: "Whether to press Enter after input"    
+                
+      - name: "Browser.hover"    
+        description: "Hover over specified element"    
+        required_params:    
+          - name: "element_id"    
+            type: "int"    
+            description: "Element ID"    
+                
+      - name: "Browser.scroll"    
+        description: "Scroll page"    
+        required_params:    
+          - name: "direction"    
+            type: "str"    
+            enum: ["up", "down"]    
+            description: "Scroll direction"    
+                
+      - name: "Browser.press"    
+        description: "Press keyboard key"    
+        required_params:    
+          - name: "key"    
+            type: "str"    
+            description: "Key name (e.g., 'Enter', 'Escape')"    
+                
+      - name: "Browser.go_back"    
+        description: "Go back to previous page"   
+        required_params: []    
+            
+      - name: "Browser.go_forward"    
+        description: "Go forward to next page"  
+        required_params: []    
+            
+      - name: "Browser.close_tab"    
+        description: "Close current tab"   
+        required_params: []    
+            
+      - name: "Browser.tab_focus"    
+        description: "Switch to specified tab"   
+        required_params:    
+          - name: "page_number"    
+            type: "int"    
+            description: "Tab index"    
+    note: "Browser uses integer element_id (from accessibility tree), not CSS selectors"    
+            
+  - category: "Command Execution"        
+    description: "Terminal/Bash for executing system commands"    
+    tools:    
+      - name: "Terminal.run_command"    
+        description: "Execute shell command and return output (for Engineer2)"   
+        required_params:    
+          - name: "cmd"    
+            type: "str"    
+            description: "Shell command to execute"    
+        returns: "Command output (string)"    
+        note: "Output is specially formatted, includes [command] and [command output] markers"    
+                
+      - name: "Bash.run"    
+        description: "Execute bash command (for SWEAgent, supports custom shell functions)"   
+        required_params:    
+          - name: "cmd"    
+            type: "str"    
+            description: "Bash command or custom shell function"    
+        custom_functions:    
+          - "open <path> [<line_number>]: Open file"    
+          - "goto <line_number>: Jump to specified line"    
+          - "scroll_down/scroll_up: Scroll file"    
+          - "create <filename>: Create file"    
+          - "search_dir_and_preview <term> [<dir>]: Search directory"    
+          - "search_file <term> [<file>]: Search file"    
+          - "find_file <name> [<dir>]: Find file"    
+          - "edit <start>:<end> <<EOF...EOF: Edit file"    
+          - "submit: Submit code"    
+            
+  - category: "Planning and Communication"        
+    description: "Task management and human interaction"    
+    tools:    
+      - name: "Plan.append_task"    
+        description: "Append new task to end of plan"  
+        required_params:    
+          - name: "task_id"    
+            type: "str"    
+            description: "Task ID (number)"    
+          - name: "instruction"    
+            type: "str"    
+            description: "Task instruction"    
+          - name: "assignee"    
+            type: "str"    
+            description: "Task assignee (Agent name)"    
+        optional_params:    
+          - name: "dependent_task_ids"    
+            type: "list[str]"    
+            default: []    
+            description: "List of dependent task IDs"    
+                
+      - name: "Plan.finish_current_task"    
+        description: "Finish current task, set Task.is_finished=True, move to next task"   
+        required_params: []    
+        note: "This is a special command that triggers task status update"  
+                
+      - name: "Plan.replace_task"    
+        description: "Replace existing task and reset all tasks that depend on it"

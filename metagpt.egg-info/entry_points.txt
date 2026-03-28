@@ -1,0 +1,2 @@
+[console_scripts]
+metagpt = metagpt.software_company:app

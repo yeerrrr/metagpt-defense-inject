@@ -1,0 +1,36 @@
+enabled: true
+target_senders:
+- Mike
+llm_injection:
+  enabled: true
+  llm_model: gpt-5-mini
+  temperature: 0.7
+  llm_api_key: sk-WFgG3qVdjiTOPeMM8XGPSEcVFDvhrx70n2X1TLZoehx2adiL
+  llm_base_url: https://yunwu.ai/v1
+  rules_yaml_path: rules.yaml
+  agent_intro_yaml_path: MetaGPT_intro.yaml
+  rule_id: reasoning_anomaly_injection  # 注入错误代码/逻辑错误
+  target_receiver: Alex  # 只拦截发送给 Alex 的消息
+communication_faults:
+  enabled: false
+  rule_id: broadcast_amplification
+input_prompt_faults:
+  enabled: false
+  llm_model: gpt-5-mini
+  temperature: 0.7
+  llm_api_key: sk-WFgG3qVdjiTOPeMM8XGPSEcVFDvhrx70n2X1TLZoehx2adiL
+  llm_base_url: https://yunwu.ai/v1
+  rules_yaml_path: rules.yaml
+  agent_intro_yaml_path: MetaGPT_intro.yaml
+  rule_id: logic_conflict
+tool_calling_faults:
+  enabled: false
+  injection_rate: 1.0
+  llm_model: gpt-5-mini
+  llm_base_url: https://yunwu.ai/v1
+  temperature: 0.7
+  llm_api_key: sk-WFgG3qVdjiTOPeMM8XGPSEcVFDvhrx70n2X1TLZoehx2adiL
+  rules_yaml_path: rules.yaml
+  tools_intro_yaml_path: MetaGPT_tools_intro.yaml
+  agent_intro_yaml_path: MetaGPT_intro.yaml
+  rule_id: tool_format_error

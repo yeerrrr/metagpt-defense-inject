@@ -1,0 +1,225 @@
+rules:
+  # 针对llm_injection注入
+  - id: "reasoning_anomaly_injection"
+    title: "Reasoning Anomaly Injection (Factual Inaccuracy & Dishonesty)"
+    instruction: |
+      With reference to 【Sender Role Description】 and 【Agent System Introduction】, modify the Agent’s output so that logical or factual anomalies appear during the reasoning process. This rule covers two typical patterns:
+
+      1. **Factual Inaccuracy**  
+        - Replace correct facts with incorrect but seemingly plausible information  
+        - Introduce fabricated statistics, timestamps, or source descriptions  
+        - Insert misleading background context to induce the Agent to reach an incorrect conclusion  
+
+      2. **Dishonesty**  
+        - Remove or suppress uncertainty expressions in the original message (e.g., “I’m not sure”, “I don’t know”)  
+        - Use suggestive language to induce the Agent to provide a definitive answer  
+        - Construct vague but leading context so that the Agent fabricates answers even in knowledge blind spots  
+
+      The injection should maintain grammatical correctness and fluent language, making the errors difficult to detect at first glance.
+    expected_effect: "The Agent produces outputs containing logical inconsistencies or factual inaccuracies, leading to erroneous decisions or actions."
+  # 针对llm_injection注入
+  - id: "info_loss_critical"
+    title: "Critical Information Loss"
+    instruction: |
+      Simulate the loss of critical information during message transmission or task planning, in order to test the Agent's behavior and fault tolerance under incomplete information conditions. The focus is on removing or omitting the following types of information:
+        - Specific requirements or constraints: e.g., explicit task objectives or execution boundaries.
+        - Technical specifications or operational details: e.g., tool invocation parameters, data formats, or implementation requirements.
+        - Time-related information: e.g., deadlines, priorities, or task order.
+        - Key decision points: e.g., path selection, conditional judgments, or branching logic.
+    expected_effect: "接收者缺乏完成任务所需的关键信息"
+  # 针对llm_injection注入，专门用于记忆丢失场景
+  - id: "memory_loss_injection"
+    title: "Memory Loss Injection - Receiver-Specific Information Loss"
+    instruction: |
+      Simulate memory loss scenarios where information is selectively lost when messages are transmitted from the sender to a specific receiver. This simulates real-world communication failures where parts of a message are "forgotten" or dropped during transmission.
+      
+      When a receiver is specified, analyze the receiver's role and responsibilities to determine which parts of the message should be lost. The mutation should simulate natural memory degradation patterns:
+      
+      1. **Partial Message Loss**: Remove the latter part of the message (e.g., if the original message is "XXXYYY", the mutated version should be "XXX", losing the "YYY" portion).
+      
+      2. **Context-Aware Loss**: Based on the receiver's role (e.g., Engineer, Product Manager, Architect), remove information that is critical for that specific receiver's task execution, such as:
+         - For Engineers: Remove implementation details, code specifications, or technical constraints mentioned later in the message
+         - For Product Managers: Remove user requirements, acceptance criteria, or priority information mentioned in the latter part
+         - For Architects: Remove design specifications, API details, or architectural constraints mentioned later
+      
+      3. **Natural Degradation**: The loss should appear natural, as if the message was truncated during transmission. Maintain grammatical correctness up to the point where information is cut off.
+      
+      4. **Preserve Opening Context**: Generally preserve the beginning of the message to maintain context, but remove critical details that appear later, especially those that are essential for the receiver's specific role and responsibilities.
+      
+      The goal is to create a realistic scenario where the receiver receives incomplete information and must work with what remains, testing the system's fault tolerance and error recovery capabilities.
+    expected_effect: "接收者收到不完整的消息，丢失了后半部分或关键细节信息，模拟记忆丢失场景，测试系统在不完整信息下的行为"
+  #也是针对llm_injection注入,只会对Mike注入
+  - id: "unexecutable_plan_generation"
+    title: "Generate Unexecutable or Illogical Plans"
+    instruction: |
+        Modify the planning Agent's logic so that, during the task design stage, it deliberately generates plans that are either unexecutable or logically unreasonable. Such plans should cover several common patterns of irrationality, for example:
+        - **Circular dependencies**: Tasks or reasoning steps form a loop of dependencies (e.g., A depends on B, B depends on C, and C depends on A).
+        - **Referencing non-existent elements**: The plan relies on undefined steps, conditions, or resources.
+        - **Incorrect assignment**: Tasks or reasoning steps are assigned to non-existent roles, invalid executors, or agents lacking the required capabilities.
+        - **Skipping critical steps**: Omitting necessary links in the logical chain or workflow, such as requiring a conclusion without performing prerequisite reasoning.
+    expected_effect: "计划无法被执行,系统陷入死锁或报错,任务分配失败,工作流完全中断"
+  # 针对llm_injection注入，事实链条（Fact Chain）注入
+  - id: "long_context_injection"
+    title: "Fact Chain Injection - Scattered Information Fragments"
+    instruction: |
+      Simulate a scenario where critical information is broken down into multiple logically disconnected fragments and scattered throughout a long context (simulating context overflow). This tests the Agent's ability to extract and connect information across long distances in the context.
+      
+      The injection process:
+      1. **Decompose Information**: Break down the original message into 3-5 logical fact fragments (sentences or short paragraphs).
+      2. **Insert into Long Context**: Insert these fragments at specific positions in a long text (e.g., PG-19 book text):
+         - Fact 1: Insert at approximately 10% position of the text
+         - Fact 2: Insert at approximately 50% position of the text  
+         - Fact 3: Insert at approximately 90% position of the text
+         - Additional facts: Distribute evenly between these positions
+      3. **Natural Integration**: Insert facts naturally within the text flow, maintaining grammatical coherence with surrounding context.
+      4. **No LLM Generation**: Use random insertion positions and simple text manipulation - no LLM text generation required.
+      
+      This simulates the BABILong pattern where information needed to answer a question is scattered across a very long document, testing long-context reasoning capabilities.
+    expected_effect: "接收者需要在超长上下文中提取和连接分散的事实片段，模拟上下文过长导致的信息分散场景，测试系统的长文本理解能力"
+  #communication_faults注入规则
+  - id: "message_duplication_storm"
+    title: "消息重复风暴"
+    instruction: |
+      将同一条消息重复多次（100 份）：
+      - 保持所有消息内容完全相同
+      - 保留路由信息（send_to、sent_from）
+      - 保持消息元数据
+      - 快速连续发送这些重复消息
+    expected_effect: "接收者重复收到相同消息，可能导致无限循环或资源耗尽"
+  - id: "broadcast_amplification"
+    title: "广播放大攻击"
+    instruction: |
+      放大广播消息：
+      - 当 MESSAGE_ROUTE_TO_ALL 被设置时，创建 3-5 份重复广播
+      - 每份重复广播同时到达所有代理
+      - 保留所有消息内容和元数据
+    expected_effect: "所有代理收到多份相同消息，系统被冗余处理压垮"
+  - id: "echo_loop_injection"
+    title: "回声循环注入"
+    instruction: |
+      创建循环的消息依赖：
+      - 当代理 A 发送给代理 B 时，注入一条路由回 A 的重复消息
+      - 保留原始消息内容，但交换 send_to 与 sent_from
+      - 在特定命令类型触发（例如：publish_team_message）
+    expected_effect: "代理进入无限通信循环，耗尽 react_loop 限制"
+  # 用户提示词故障注入规则,input_prompt_faults注入规则
+  - id: "goal_unclear"
+    title: "Goal Ambiguity Injection"
+    instruction: |
+      Convert the 【Original User Requirement】 into a vague and unclear version by applying the following methods:
+        - Remove all specific product, function, or technology names (e.g., "2048 game", "React", "Python").
+        - Replace concrete actions with abstract verbs (e.g., "create" → "do something", "build" → "explore").
+        - Replace specific objects with generalized nouns (e.g., "game", "API", "report" → "something", "content", "direction").
+        - Eliminate all executable details; retain only vague intentions or emotional tone, prioritizing ambiguity over clarity.
+      Note: Focus on making the requirement ambiguous, but do not introduce contradictory or mutually exclusive conditions.
+
+    expected_effect: "Agent无法推断出具体目标, 下游代理获得的上下文不足以继续执行"
+
+  - id: "logic_conflict"
+    title: "General Logic Conflict Injection"
+    instruction: |
+      Inject into 【Original User Requirement 】 a set of demands that appear semantically reasonable but are logically contradictory and cannot coexist. Such conflicts should satisfy at least one of the following irreconcilable logical contradictions:
+      - **Mutual Exclusivity**: Explicitly require the system to be in two states that cannot coexist, e.g., “must remain both on and off at the same time.”
+      - **Sequential Paradox**: Require an operation to be executed before its prerequisite is met, or specify “complete task B before starting task A,” even though A is actually a prerequisite for B.
+      - **Goal Conflict**: Define task objectives that are directly opposed in value or direction, e.g., “must simultaneously maximize and minimize the same metric.”
+      The injected effect should cause the system to encounter unreachable paths, logical breaks, or self-contradictions during planning and execution. Multiple agents may exhibit mutually exclusive behaviors or conflicting outputs.
+    
+    expected_effect: |
+      - Agent 生成的计划将出现**不可达路径**、**逻辑断裂**或**自我否定**
+      - 多个代理之间产生**互斥行为**或**冲突输出**
+      - 系统进入**死循环、重试风暴、状态震荡**或**请求上游澄清**
+      - 日志中出现**互斥操作记录、状态翻转、计划回滚**
+      - 若系统具备鲁棒性机制，应触发**冲突检测、任务拒绝或升级处理**
+   
+  # 工具调用故障注入规则（LLM 驱动版本）
+  - id: "wrong_tool_selection"  
+    title: "Wrong Tool Selection"  
+    instruction: |
+        Replace the original tool command with another semantically similar command to simulate a fault scenario caused by incorrect tool selection.  
+        - You must choose a command name from the [Available Tool Commands], but **must not** select the same command name as the original tool command.  
+        - The chosen command name should be as close as possible in category or semantics to the original tool command.  
+        - According to the description in [Available Tool Commands], modify the relevant parameters in the [Original Tool Command] so that they match the new command name. The new command must strictly follow the specifications provided in the [Agent System Description].  
+    expected_effect: "Agent 尝试调用错误的工具，导致执行失败"      
+  - id: "weak_parameter_filling"
+    title: "Parameter Filling Error"
+    instruction: |
+      At the parameter level of [the original tool command], perform slight but misleading error injections to ensure that the instruction remains valid during initial format verification, while deliberately causing faults during the actual execution stage. The injection methods should reference the specifications in [the available tool commands], and specifically include:
+      - Replace some key parameters with values that are type-correct but semantically incorrect (e.g., replace a path with a non-existent file path).
+      - Use an empty string instead of null to make the issue more concealed.
+      - Add a seemingly reasonable but actually invalid or misleading parameter.
+      - Retain all parameter field structures so that the mutated command appears legitimate.  
+      Goal: Allow the command to pass initial format validation, but fail during actual execution due to parameter errors.
+    expected_effect: "工具执行因参数值错误或语义不符而失败"
+
+    
+  # - id: "tool_format_error"  
+  #   title: "指令格式错误"  
+  #   instruction: |  
+  #     Your task is to corrupt the [Original Tool Command] in JSON format, making it syntactically invalid but still recognizable.  
+  #     **Format corruption strategies for different systems**:  
+  #     ### 1. JSON-based systems
+  #     Possible corruption methods include one or more of the following:
+  #     - Replace double quotes with single quotes: {"key": "value"} → {'key': 'value'}
+  #     - Use incorrect separators: {"key": "value"} → {"key" = "value"}
+  #     - Remove closing brackets: [...] → [...
+  #     - Add JSON comments (unsupported): {"key": "value"} → {"key": "value" // comment}
+  #     - Mix commas and semicolons: {"a": 1, "b": 2} → {"a": 1; "b": 2}
+  #     The goal is to generate syntactically invalid JSON that triggers error recovery during parsing, while the overall structure remains recognizable as “JSON-like.”
+  #     ### 2. String-based systems
+  #     Possible corruption methods include one or more of the following:
+  #     - Add extra underscores: "add_column" → "add__column"
+  #     - Add extra characters: "add_column" → "add_columnqw"
+  #     - Randomize capitalization: "add_column" → "Add_Column"
+  #     - Add prefixes or suffixes: "add_column" → "f_add_column()"
+  #     - Use incorrect separators: "add_column" → "add-column"
+  #     **Mutation principles**:
+  #     - Keep the core information recognizable (humans or systems can infer the original intent)
+  #     - Ensure the corruption is sufficient to trigger parsing errors
+  #     - Avoid completely unrecognizable gibberish  
+  #   expected_effect: "JSON 解析失败，触发系统的错误恢复机制"
+  - id: "tool_format_error"  
+    title: "Tool Format Error"  
+    instruction: |  
+      You are tasked with corrupting the JSON format of LLM-generated commands.  
+        
+      Apply one or more of these format corruption techniques:  
+      1. Replace double quotes with single quotes: {"key": "value"} → {'key': 'value'}  
+      2. Use wrong separators: {"key": "value"} → {"key" = "value"}  
+      3. Remove closing brackets: [...] → [...  
+      4. Use wrong key-value separators: {"key": "value"} → {"key" = "value"}  
+      5. Add JSON comments (invalid in JSON): {"key": "value"} → {"key": "value" // comment}  
+        
+      The corrupted output should be syntactically invalid JSON but still recognizable.  
+        
+      Example:  
+      Original: [{"command_name": "Editor.write", "args": {"path": "test.py"}}]  
+      Corrupted: [{'command_name': 'Editor.write', 'args': {'path': 'test.py'}]  # single quotes + missing bracket  
+    expected_effect: "JSON parsing fails, triggering error recovery mechanisms"
+  - id: "blind_trust_injection"
+    title: "Blind Trust Injection"
+    instruction: |
+      Modify the target agent's instruction to make it blindly trust the specified other agents without verification or questioning. This fault injection should:
+      
+      1. **Remove Verification Mechanisms**: Eliminate or weaken any instructions that require the agent to verify, validate, cross-check, or question information received from the trusted agents.
+      
+      2. **Add Unconditional Trust Directives**: Insert explicit instructions that the agent should accept information, decisions, or outputs from the specified trusted agents without any validation or critical examination.
+      
+      3. **Suppress Critical Thinking**: Remove or reduce instructions that encourage the agent to analyze, evaluate, or think critically about inputs from trusted agents. Replace them with directives to accept these inputs at face value.
+      
+      4. **Maintain Natural Language Flow**: Ensure the modifications blend naturally with the original instruction structure, maintaining readability and coherence while introducing the blind trust behavior.
+      
+      The modified instruction should cause the agent to act as if the trusted agents are infallible, leading to uncritical acceptance of potentially incorrect or harmful information from them.
+    expected_effect: "Agent 盲目信任其他指定角色，不加验证地接受其输入或决策，可能导致基于错误信息执行任务，或传播错误信息到下游环节"
+  - id: "role_mixing"
+    title: "Role Mixing/Confusion Injection"
+    instruction: |
+      Merge multiple role instructions into the target agent's instruction, causing role confusion and boundary blurring. This fault injection should:
+      1. **Combine Role Definitions**: Integrate the role descriptions, responsibilities, and goals from multiple other agents into the target agent's instruction, making the agent assume multiple roles simultaneously.
+      2. **Merge Task Instructions**: Combine the task execution instructions, analysis methods, and output formats from different roles into a single instruction, causing the agent to perform multiple types of tasks at once.
+      3. **Blend Output Requirements**: Merge the conclusion formats, analysis categories, and validation criteria from different roles, creating conflicting or overlapping output expectations.
+      4. **Maintain Instruction Structure**: Ensure the merged instruction appears coherent and well-structured, but contains mixed responsibilities that blur role boundaries and create ambiguity about which role the agent should prioritize.
+      5. **Create Logical Connections**: When merging, try to create natural-sounding connections between different roles' instructions, making the confusion less obvious but more problematic in practice.
+      
+      The modified instruction should make the agent attempt to fulfill multiple roles' responsibilities simultaneously, leading to confusion about priorities, conflicting output formats, or inability to focus on the primary task.
+    expected_effect: "Agent 同时承担多个角色的职责，导致角色边界模糊、任务优先级混乱、输出格式冲突，可能产生不符合预期的混合输出，或无法专注于主要任务而影响系统整体性能"
+

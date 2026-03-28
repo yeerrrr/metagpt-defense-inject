@@ -1,0 +1,8 @@
+# Full Example: https://github.com/geekan/MetaGPT/blob/main/config/config2.example.yaml
+# Reflected Code: https://github.com/geekan/MetaGPT/blob/main/metagpt/config2.py
+# Config Docs: https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html
+llm:
+  api_type: "openai"  # or azure / ollama / groq etc.
+  model: "gpt-5"  # gpt-3.5-turbo 当前无可用渠道，尝试使用 gpt-4
+  base_url: "https://yunwu.ai/v1"  # OpenAI SDK 会自动添加 /chat/completions 路径
+  api_key: "sk-WFgG3qVdjiTOPeMM8XGPSEcVFDvhrx70n2X1TLZoehx2adiL" 

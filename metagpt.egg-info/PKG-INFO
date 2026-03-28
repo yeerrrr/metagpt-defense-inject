@@ -1,0 +1,363 @@
+Metadata-Version: 2.4
+Name: metagpt
+Version: 1.0.0
+Summary: The Multi-Agent Framework
+Home-page: https://github.com/geekan/MetaGPT
+Author: Alexander Wu
+Author-email: alexanderwu@deepwisdom.ai
+License: MIT
+Keywords: metagpt multi-agent multi-role programming gpt llm metaprogramming
+Requires-Python: >=3.9, <3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiohttp==3.8.6
+Requires-Dist: channels==4.0.0
+Requires-Dist: faiss_cpu==1.7.4
+Requires-Dist: fire==0.4.0
+Requires-Dist: typer==0.9.0
+Requires-Dist: lancedb==0.4.0
+Requires-Dist: loguru==0.6.0
+Requires-Dist: meilisearch==0.21.0
+Requires-Dist: numpy~=1.26.4
+Requires-Dist: openai~=1.64.0
+Requires-Dist: openpyxl~=3.1.5
+Requires-Dist: beautifulsoup4==4.12.3
+Requires-Dist: pandas==2.1.1
+Requires-Dist: pydantic>=2.5.3
+Requires-Dist: python_docx==0.8.11
+Requires-Dist: PyYAML==6.0.1
+Requires-Dist: setuptools>=65.6.3
+Requires-Dist: tenacity==8.2.3
+Requires-Dist: tiktoken==0.7.0
+Requires-Dist: tqdm==4.66.2
+Requires-Dist: anthropic==0.47.2
+Requires-Dist: typing-inspect==0.8.0
+Requires-Dist: libcst==1.0.1
+Requires-Dist: qdrant-client==1.7.0
+Requires-Dist: grpcio~=1.67.0
+Requires-Dist: grpcio-tools~=1.62.3
+Requires-Dist: grpcio-status~=1.62.3
+Requires-Dist: ta==0.10.2
+Requires-Dist: semantic-kernel==0.4.3.dev0
+Requires-Dist: wrapt==1.15.0
+Requires-Dist: redis~=5.0.0
+Requires-Dist: curl-cffi~=0.7.0
+Requires-Dist: httplib2~=0.22.0
+Requires-Dist: websocket-client~=1.8.0
+Requires-Dist: aiofiles==23.2.1
+Requires-Dist: gitpython==3.1.40
+Requires-Dist: zhipuai~=2.1.5
+Requires-Dist: rich==13.6.0
+Requires-Dist: nbclient==0.9.0
+Requires-Dist: nbformat==5.9.2
+Requires-Dist: ipython==8.17.2
+Requires-Dist: ipykernel==6.27.1
+Requires-Dist: scikit_learn==1.3.2
+Requires-Dist: typing-extensions==4.11.0
+Requires-Dist: socksio~=1.0.0
+Requires-Dist: gitignore-parser==0.1.9
+Requires-Dist: websockets<12.0,>=10.0
+Requires-Dist: networkx~=3.2.1
+Requires-Dist: google-generativeai==0.4.1
+Requires-Dist: playwright>=1.26
+Requires-Dist: anytree
+Requires-Dist: ipywidgets==8.1.1
+Requires-Dist: Pillow
+Requires-Dist: imap_tools==1.5.0
+Requires-Dist: pylint~=3.0.3
+Requires-Dist: pygithub~=2.3
+Requires-Dist: htmlmin
+Requires-Dist: fsspec
+Requires-Dist: grep-ast~=0.3.3
+Requires-Dist: unidiff==0.7.5
+Requires-Dist: qianfan~=0.4.4
+Requires-Dist: dashscope~=1.19.3
+Requires-Dist: rank-bm25==0.2.2
+Requires-Dist: jieba==0.42.1
+Requires-Dist: volcengine-python-sdk[ark]~=1.0.94
+Requires-Dist: gymnasium==0.29.1
+Requires-Dist: boto3~=1.34.69
+Requires-Dist: spark_ai_python~=0.3.30
+Requires-Dist: tree_sitter~=0.23.2
+Requires-Dist: tree_sitter_python~=0.23.2
+Requires-Dist: httpx==0.28.1
+Provides-Extra: selenium
+Requires-Dist: selenium>4; extra == "selenium"
+Requires-Dist: webdriver_manager; extra == "selenium"
+Requires-Dist: beautifulsoup4; extra == "selenium"
+Provides-Extra: search-google
+Requires-Dist: google-api-python-client==2.94.0; extra == "search-google"
+Provides-Extra: search-ddg
+Requires-Dist: duckduckgo-search~=4.1.1; extra == "search-ddg"
+Provides-Extra: rag
+Requires-Dist: llama-index-core==0.10.15; extra == "rag"
+Requires-Dist: llama-index-embeddings-azure-openai==0.1.6; extra == "rag"
+Requires-Dist: llama-index-embeddings-openai==0.1.5; extra == "rag"
+Requires-Dist: llama-index-embeddings-gemini==0.1.6; extra == "rag"
+Requires-Dist: llama-index-embeddings-ollama==0.1.2; extra == "rag"
+Requires-Dist: llama-index-llms-azure-openai==0.1.4; extra == "rag"
+Requires-Dist: llama-index-readers-file==0.1.4; extra == "rag"
+Requires-Dist: llama-index-retrievers-bm25==0.1.3; extra == "rag"
+Requires-Dist: llama-index-vector-stores-faiss==0.1.1; extra == "rag"
+Requires-Dist: llama-index-vector-stores-elasticsearch==0.1.6; extra == "rag"
+Requires-Dist: llama-index-vector-stores-chroma==0.1.6; extra == "rag"
+Requires-Dist: llama-index-postprocessor-cohere-rerank==0.1.4; extra == "rag"
+Requires-Dist: llama-index-postprocessor-colbert-rerank==0.1.1; extra == "rag"
+Requires-Dist: llama-index-postprocessor-flag-embedding-reranker==0.1.2; extra == "rag"
+Requires-Dist: docx2txt==0.8; extra == "rag"
+Provides-Extra: test
+Requires-Dist: google-api-python-client==2.94.0; extra == "test"
+Requires-Dist: llama-index-embeddings-openai==0.1.5; extra == "test"
+Requires-Dist: llama-index-retrievers-bm25==0.1.3; extra == "test"
+Requires-Dist: llama-index-embeddings-gemini==0.1.6; extra == "test"
+Requires-Dist: llama-index-llms-azure-openai==0.1.4; extra == "test"
+Requires-Dist: llama-index-vector-stores-faiss==0.1.1; extra == "test"
+Requires-Dist: llama-index-vector-stores-elasticsearch==0.1.6; extra == "test"
+Requires-Dist: beautifulsoup4; extra == "test"
+Requires-Dist: llama-index-embeddings-ollama==0.1.2; extra == "test"
+Requires-Dist: llama-index-readers-file==0.1.4; extra == "test"
+Requires-Dist: llama-index-core==0.10.15; extra == "test"
+Requires-Dist: docx2txt==0.8; extra == "test"
+Requires-Dist: llama-index-postprocessor-cohere-rerank==0.1.4; extra == "test"
+Requires-Dist: llama-index-embeddings-azure-openai==0.1.6; extra == "test"
+Requires-Dist: llama-index-vector-stores-chroma==0.1.6; extra == "test"
+Requires-Dist: llama-index-postprocessor-colbert-rerank==0.1.1; extra == "test"
+Requires-Dist: llama-index-postprocessor-flag-embedding-reranker==0.1.2; extra == "test"
+Requires-Dist: selenium>4; extra == "test"
+Requires-Dist: webdriver_manager; extra == "test"
+Requires-Dist: duckduckgo-search~=4.1.1; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-asyncio; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-html; extra == "test"
+Requires-Dist: pytest-xdist; extra == "test"
+Requires-Dist: pytest-timeout; extra == "test"
+Requires-Dist: connexion[uvicorn]~=3.0.5; extra == "test"
+Requires-Dist: azure-cognitiveservices-speech~=1.31.0; extra == "test"
+Requires-Dist: aioboto3~=12.4.0; extra == "test"
+Requires-Dist: gradio==3.0.0; extra == "test"
+Requires-Dist: google-api-core==2.17.1; extra == "test"
+Requires-Dist: protobuf~=4.25.5; extra == "test"
+Requires-Dist: pylint==3.0.3; extra == "test"
+Requires-Dist: pybrowsers; extra == "test"
+Provides-Extra: pyppeteer
+Requires-Dist: pyppeteer>=1.0.2; extra == "pyppeteer"
+Provides-Extra: dev
+Requires-Dist: pylint~=3.0.3; extra == "dev"
+Requires-Dist: black~=23.3.0; extra == "dev"
+Requires-Dist: isort~=5.12.0; extra == "dev"
+Requires-Dist: pre-commit~=3.6.0; extra == "dev"
+Provides-Extra: android-assistant
+Requires-Dist: pyshine==0.0.9; extra == "android-assistant"
+Requires-Dist: opencv-python==4.6.0.66; extra == "android-assistant"
+Requires-Dist: protobuf<3.20,>=3.9.2; extra == "android-assistant"
+Requires-Dist: modelscope; extra == "android-assistant"
+Requires-Dist: tensorflow==2.9.1; os_name == "linux" and extra == "android-assistant"
+Requires-Dist: tensorflow==2.9.1; os_name == "win32" and extra == "android-assistant"
+Requires-Dist: tensorflow-macos==2.9; os_name == "darwin" and extra == "android-assistant"
+Requires-Dist: keras==2.9.0; extra == "android-assistant"
+Requires-Dist: torch; extra == "android-assistant"
+Requires-Dist: torchvision; extra == "android-assistant"
+Requires-Dist: transformers; extra == "android-assistant"
+Requires-Dist: opencv-python; extra == "android-assistant"
+Requires-Dist: matplotlib; extra == "android-assistant"
+Requires-Dist: pycocotools; extra == "android-assistant"
+Requires-Dist: SentencePiece; extra == "android-assistant"
+Requires-Dist: tf_slim; extra == "android-assistant"
+Requires-Dist: tf_keras; extra == "android-assistant"
+Requires-Dist: pyclipper; extra == "android-assistant"
+Requires-Dist: shapely; extra == "android-assistant"
+Requires-Dist: groundingdino-py; extra == "android-assistant"
+Requires-Dist: datasets==2.18.0; extra == "android-assistant"
+Requires-Dist: clip-openai; extra == "android-assistant"
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+
+# MetaGPT: The Multi-Agent Framework
+
+<p align="center">
+<a href=""><img src="docs/resources/MetaGPT-new-log.png" alt="MetaGPT logo: Enable GPT to work in a software company, collaborating to tackle more complex tasks." width="150px"></a>
+</p>
+
+<p align="center">
+[ <b>En</b> |
+<a href="docs/README_CN.md">中</a> |
+<a href="docs/README_FR.md">Fr</a> |
+<a href="docs/README_JA.md">日</a> ]
+<b>Assign different roles to GPTs to form a collaborative entity for complex tasks.</b>
+</p>
+
+<p align="center">
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+<a href="https://discord.gg/DYn29wFk9z"><img src="https://img.shields.io/badge/Join-Discord-gGnrXvVz7a?logo=discord" alt="Discord Follow"></a>
+<a href="https://twitter.com/MetaGPT_"><img src="https://img.shields.io/twitter/follow/MetaGPT?style=social" alt="Twitter Follow"></a>
+</p>
+
+<h4 align="center">
+    
+</h4>
+
+## News
+
+🚀 Mar. 10, 2025: 🎉 [mgx.dev](https://mgx.dev/) is the #1 Product of the Week on @ProductHunt! 🏆
+
+🚀 Mar. &nbsp; 4, 2025: 🎉 [mgx.dev](https://mgx.dev/) is the #1 Product of the Day on @ProductHunt! 🏆
+
+🚀 Feb. 19, 2025: Today we are officially launching our natural language programming product: [MGX (MetaGPT X)](https://mgx.dev/) - the world's first AI agent development team. More details on [Twitter](https://x.com/MetaGPT_/status/1892199535130329356).
+
+🚀 Feb. 17, 2025: We introduced two papers: [SPO](https://arxiv.org/pdf/2502.06855) and [AOT](https://arxiv.org/pdf/2502.12018), check the [code](examples)!
+
+🚀 Jan. 22, 2025: Our paper [AFlow: Automating Agentic Workflow Generation](https://openreview.net/forum?id=z5uVAKwmjf) accepted for **oral presentation (top 1.8%)** at ICLR 2025, **ranking #2** in the LLM-based Agent category.
+
+👉👉 [Earlier news](docs/NEWS.md) 
+
+## Software Company as Multi-Agent System
+
+1. MetaGPT takes a **one line requirement** as input and outputs **user stories / competitive analysis / requirements / data structures / APIs / documents, etc.**
+2. Internally, MetaGPT includes **product managers / architects / project managers / engineers.** It provides the entire process of a **software company along with carefully orchestrated SOPs.**
+   1. `Code = SOP(Team)` is the core philosophy. We materialize SOP and apply it to teams composed of LLMs.
+
+![A software company consists of LLM-based roles](docs/resources/software_company_cd.jpeg)
+
+<p align="center">Software Company Multi-Agent Schematic (Gradually Implementing)</p>
+
+## Get Started
+
+### Installation
+
+> Ensure that Python 3.9 or later, but less than 3.12, is installed on your system. You can check this by using: `python --version`.  
+> You can use conda like this: `conda create -n metagpt python=3.9 && conda activate metagpt`
+
+```bash
+pip install --upgrade metagpt
+# or `pip install --upgrade git+https://github.com/geekan/MetaGPT.git`
+# or `git clone https://github.com/geekan/MetaGPT && cd MetaGPT && pip install --upgrade -e .`
+```
+
+**Install [node](https://nodejs.org/en/download) and [pnpm](https://pnpm.io/installation#using-npm) before actual use.**
+
+For detailed installation guidance, please refer to [cli_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-stable-version)
+ or [docker_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-with-docker)
+
+### Configuration
+
+You can init the config of MetaGPT by running the following command, or manually create `~/.metagpt/config2.yaml` file:
+```bash
+# Check https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html for more details
+metagpt --init-config  # it will create ~/.metagpt/config2.yaml, just modify it to your needs
+```
+
+You can configure `~/.metagpt/config2.yaml` according to the [example](https://github.com/geekan/MetaGPT/blob/main/config/config2.example.yaml) and [doc](https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html):
+
+```yaml
+llm:
+  api_type: "openai"  # or azure / ollama / groq etc. Check LLMType for more options
+  model: "gpt-4-turbo"  # or gpt-3.5-turbo
+  base_url: "https://api.openai.com/v1"  # or forward url / other llm url
+  api_key: "YOUR_API_KEY"
+```
+
+### Usage
+
+After installation, you can use MetaGPT at CLI
+
+```bash
+metagpt "Create a 2048 game"  # this will create a repo in ./workspace
+```
+
+or use it as library
+
+```python
+from metagpt.software_company import generate_repo
+from metagpt.utils.project_repo import ProjectRepo
+
+repo: ProjectRepo = generate_repo("Create a 2048 game")  # or ProjectRepo("<path>")
+print(repo)  # it will print the repo structure with files
+```
+
+You can also use [Data Interpreter](https://github.com/geekan/MetaGPT/tree/main/examples/di) to write code:
+
+```python
+import asyncio
+from metagpt.roles.di.data_interpreter import DataInterpreter
+
+async def main():
+    di = DataInterpreter()
+    await di.run("Run data analysis on sklearn Iris dataset, include a plot")
+
+asyncio.run(main())  # or await main() in a jupyter notebook setting
+```
+
+
+### QuickStart & Demo Video
+- Try it on [MetaGPT Huggingface Space](https://huggingface.co/spaces/deepwisdom/MetaGPT-SoftwareCompany)
+- [Matthew Berman: How To Install MetaGPT - Build A Startup With One Prompt!!](https://youtu.be/uT75J_KG_aY)
+- [Official Demo Video](https://github.com/geekan/MetaGPT/assets/2707039/5e8c1062-8c35-440f-bb20-2b0320f8d27d)
+
+https://github.com/user-attachments/assets/888cb169-78c3-4a42-9d62-9d90ed3928c9
+
+## Tutorial
+
+- 🗒 [Online Document](https://docs.deepwisdom.ai/main/en/)
+- 💻 [Usage](https://docs.deepwisdom.ai/main/en/guide/get_started/quickstart.html)  
+- 🔎 [What can MetaGPT do?](https://docs.deepwisdom.ai/main/en/guide/get_started/introduction.html)
+- 🛠 How to build your own agents? 
+  - [MetaGPT Usage & Development Guide | Agent 101](https://docs.deepwisdom.ai/main/en/guide/tutorials/agent_101.html)
+  - [MetaGPT Usage & Development Guide | MultiAgent 101](https://docs.deepwisdom.ai/main/en/guide/tutorials/multi_agent_101.html)
+- 🧑‍💻 Contribution
+  - [Develop Roadmap](docs/ROADMAP.md)
+- 🔖 Use Cases
+  - [Data Interpreter](https://docs.deepwisdom.ai/main/en/guide/use_cases/agent/interpreter/intro.html)
+  - [Debate](https://docs.deepwisdom.ai/main/en/guide/use_cases/multi_agent/debate.html)
+  - [Researcher](https://docs.deepwisdom.ai/main/en/guide/use_cases/agent/researcher.html)
+  - [Receipt Assistant](https://docs.deepwisdom.ai/main/en/guide/use_cases/agent/receipt_assistant.html)
+- ❓ [FAQs](https://docs.deepwisdom.ai/main/en/guide/faq.html)
+
+## Support
+
+### Discord Join US
+
+📢 Join Our [Discord Channel](https://discord.gg/ZRHeExS6xv)! Looking forward to seeing you there! 🎉
+
+### Contributor form
+
+📝 [Fill out the form](https://airtable.com/appInfdG0eJ9J4NNL/pagK3Fh1sGclBvVkV/form) to become a contributor. We are looking forward to your participation!
+
+### Contact Information
+
+If you have any questions or feedback about this project, please feel free to contact us. We highly appreciate your suggestions!
+
+- **Email:** alexanderwu@deepwisdom.ai
+- **GitHub Issues:** For more technical inquiries, you can also create a new issue in our [GitHub repository](https://github.com/geekan/metagpt/issues).
+
+We will respond to all questions within 2-3 business days.
+
+## Citation
+
+To stay updated with the latest research and development, follow [@MetaGPT_](https://twitter.com/MetaGPT_) on Twitter. 
+
+To cite [MetaGPT](https://openreview.net/forum?id=VtmBAGCN7o) in publications, please use the following BibTeX entries.   
+
+```bibtex
+@inproceedings{hong2024metagpt,
+      title={Meta{GPT}: Meta Programming for A Multi-Agent Collaborative Framework},
+      author={Sirui Hong and Mingchen Zhuge and Jonathan Chen and Xiawu Zheng and Yuheng Cheng and Jinlin Wang and Ceyao Zhang and Zili Wang and Steven Ka Shing Yau and Zijuan Lin and Liyang Zhou and Chenyu Ran and Lingfeng Xiao and Chenglin Wu and J{\"u}rgen Schmidhuber},
+      booktitle={The Twelfth International Conference on Learning Representations},
+      year={2024},
+      url={https://openreview.net/forum?id=VtmBAGCN7o}
+}
+```
+
+For more work, please refer to [Academic Work](docs/ACADEMIC_WORK.md).

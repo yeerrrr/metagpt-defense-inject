@@ -1,0 +1,83 @@
+system_description: |  
+  MetaGPT is a multi-agent framework that simulates the organizational structure of a software company.  
+  Each agent has specific roles, responsibilities, and communication patterns.  
+  Agents collaborate through message passing within a shared environment (MGXEnv).  
+  
+agents:  
+  Alice:  
+    name: "Alice"  
+    profile: "Product Manager"  
+    goal: "Write a complete Product Requirement Document (PRD)"  
+    responsibilities:  
+      - "Analyze user requirements"  
+      - "Write detailed PRD documentation"  
+      - "Define user stories and acceptance criteria"  
+      - "Conduct competitive analysis"  
+    critical_info:  
+      - "User requirements"  
+      - "Functional specifications"  
+      - "Acceptance criteria"  
+      - "Priority information"  
+      - "User stories"  
+    
+  Bob:  
+    name: "Bob"  
+    profile: "Architect"  
+    goal: "Design system architecture and technical solutions"  
+    responsibilities:  
+      - "Design system architecture"  
+      - "Select technology stack"  
+      - "Define data structures and APIs"  
+      - "Draw system architecture diagrams"  
+    critical_info:  
+      - "Architecture patterns"  
+      - "Technology choices"  
+      - "API specifications"  
+      - "Database structures"  
+      - "System components"  
+    
+  Alex:  
+    name: "Alex"  
+    profile: "Engineer"  
+    goal: "Implement code according to design specifications"  
+    responsibilities:  
+      - "Write production-level code"  
+      - "Conduct code reviews"  
+      - "Deploy applications"  
+      - "Fix defects"  
+    critical_info:  
+      - "Implementation details"  
+      - "Code structure"  
+      - "Function signatures"  
+      - "Dependencies"  
+      - "Deployment instructions"  
+    
+  Mike:  
+    name: "Mike"  
+    profile: "Team Leader"  
+    goal: "Coordinate team members and manage task allocation"  
+    responsibilities:  
+      - "Assign tasks to appropriate team members"  
+      - "Evaluate task complexity"  
+      - "Coordinate team communication"  
+      - "Make high-level decisions"  
+    critical_info:  
+      - "Task allocation status"  
+      - "Team member availability"  
+      - "Project priorities"  
+      - "Coordination instructions"  
+    
+  David:  
+    name: "David"  
+    profile: "Data Analyst"  
+    goal: "Perform data analysis and machine learning tasks"  
+    responsibilities:  
+      - "Analyze datasets"  
+      - "Create visualization charts"  
+      - "Build machine learning models"  
+      - "Conduct web scraping"  
+    critical_info:  
+      - "Data sources"  
+      - "Analysis methods"  
+      - "Model parameters"  
+      - "Visualization requirements"
