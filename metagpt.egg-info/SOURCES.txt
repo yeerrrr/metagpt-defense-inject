@@ -290,6 +290,9 @@ metagpt/ext/werewolf/roles/witch.py
 metagpt/injector/Prompt_Injector.py
 metagpt/injector/Tester2.py
 metagpt/injector/__init__.py
+metagpt/injector/test_fact_chain.py
+metagpt/injector/test_fact_chain_standalone.py
+metagpt/injector/test_mike_alex_mixing.py
 metagpt/learn/__init__.py
 metagpt/learn/google_search.py
 metagpt/learn/skill_loader.py

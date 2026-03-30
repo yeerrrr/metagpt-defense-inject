@@ -7,6 +7,7 @@ from metagpt.roles import Role
 from metagpt.schema import Message, SerializationMixin
 from metagpt.utils.common import extract_and_encode_images
 from metagpt.injector.Tester2 import unified_fault_injection_decorator
+from defense_decorator import message_publish_defense_decorator
 
 class MGXEnv(Environment, SerializationMixin):
     """MGX Environment"""
@@ -15,6 +16,7 @@ class MGXEnv(Environment, SerializationMixin):
 
     is_public_chat: bool = True
     @unified_fault_injection_decorator()
+    @message_publish_defense_decorator()
     def _publish_message(self, message: Message, peekable: bool = True) -> bool:
         if self.is_public_chat:
             message.send_to.add(MESSAGE_ROUTE_TO_ALL)

@@ -9,7 +9,7 @@ from metagpt.logs import logger as _logger
 
 # 将 human-eval 目录添加到 Python 路径
 sys.path.append(str(Path(__file__).parent.parent / "human-eval"))
-from select_humaneval_tasks import select_tasks_by_difficulty # type: ignore
+# from select_humaneval_tasks import select_tasks_by_difficulty # type: ignore
 
 # Ensure an event loop exists before MetaGPT roles create asyncio primitives
 asyncio.set_event_loop(asyncio.new_event_loop())
@@ -112,10 +112,13 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         log_path=str(eval_log_path)  
     )  
       
-    # 搜索生成的代码  
-    possible_paths = [  
-        Path(project_path) / f"{task['entry_point']}.py",  
-    ]  
+    # 搜索生成的代码
+    # 先查标准目录，再查常见的被注入篡改目录，避免实验中断
+    repo_root = Path(__file__).resolve().parent
+    possible_paths = [
+        Path(project_path) / f"{task['entry_point']}.py",
+        repo_root / "humaneval" / f"{task['entry_point']}.py",
+    ]
     
     generated_code = None  
     found_path = None  
@@ -128,19 +131,30 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
             print(f"\n✓ 找到代码文件: {code_path}")  
             break  
       
-    if not generated_code:  
-        print(f"\n递归搜索所有Python文件...")  
-        for py_file in Path(project_path).rglob("*.py"):  
-            try:  
-                with open(py_file, 'r', encoding='utf-8') as f:  
-                    content = f.read()  
-                    if f"def {task['entry_point']}" in content:  
-                        generated_code = content  
-                        found_path = py_file  
-                        print(f"✓ 在 {py_file.relative_to(project_path)} 中找到函数")  
-                        break  
-            except Exception:  
-                continue  
+    if not generated_code:
+        print(f"\n递归搜索所有Python文件...")
+        search_roots = [Path(project_path)]
+        if repo_root not in search_roots:
+            search_roots.append(repo_root)
+
+        for search_root in search_roots:
+            for py_file in search_root.rglob("*.py"):
+                try:
+                    with open(py_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        if f"def {task['entry_point']}" in content:
+                            generated_code = content
+                            found_path = py_file
+                            try:
+                                display_path = py_file.relative_to(project_path)
+                            except ValueError:
+                                display_path = py_file
+                            print(f"✓ 在 {display_path} 中找到函数")
+                            break
+                except Exception:
+                    continue
+            if generated_code:
+                break
       
     # 评测代码  
     if generated_code:  

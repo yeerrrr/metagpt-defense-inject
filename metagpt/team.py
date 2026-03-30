@@ -27,6 +27,7 @@ from metagpt.utils.common import (
     serialize_decorator,
     write_json_file,
 )
+from defense_decorator import team_run_input_defense_decorator
 
 
 class Team(BaseModel):
@@ -118,9 +119,10 @@ class Team(BaseModel):
             stacklevel=2,
         )
         return self.run_project(idea=idea, send_to=send_to)
-    from metagpt.injector.Tester2 import team_run_input_injector 
+    from metagpt.injector.Tester2 import team_run_input_injector
     @serialize_decorator
     @team_run_input_injector()
+    @team_run_input_defense_decorator()
     async def run(self, n_round=3, idea="", send_to="", auto_archive=True):
         """Run company until target round or no money"""
         if idea:

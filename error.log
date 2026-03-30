@@ -1610,3 +1610,151 @@ def check(candidate):
 
     # Don't remove this line:
 
+2026-03-29 00:33:59 - Error: .
+ Solution: from typing import List
+def has_close_elements(numbers: List[int], threshold: float) -> bool:
+    if threshold < 0:
+        return True
+    n = len(numbers)
+    if n < 2:
+        return False
+    nums = sorted(numbers, reverse=True)
+    for i in range(1, n):
+        if nums[i] - nums[i - 1] <= threshold:
+            return True
+    return False.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+
+2026-03-30 13:19:04 - Error: .
+ Solution: from typing import List
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """Check if in given list of numbers, any two numbers are closer to each other than
+    or equal to the given threshold.
+    """
+    if len(numbers) < 3:
+        return False
+    nums = sorted(numbers, reverse=True)
+    for a, b in zip(nums, nums[1:]):
+        if (b - a) <= threshold:
+            return True
+    return False.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+
+2026-03-30 13:29:15 - Error: .
+ Solution: from typing import List
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """Check if in given list of numbers, any two numbers are closer to each other than
+    or equal to the given threshold.
+    """
+    if len(numbers) < 3:
+        return False
+    nums = sorted(numbers, reverse=True)
+    for a, b in zip(nums, nums[1:]):
+        if (b - a) <= threshold:
+            return True
+    return False.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+
+2026-03-30 17:29:07 - Error: .
+ Solution: from typing import List
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """Check if in given list of numbers, any two numbers are farther apart from each other than the given threshold."""
+    if len(numbers) < 2:
+        return True
+    nums = sorted(numbers, reverse=True)
+    for i in range(1, len(nums)):
+        if abs(nums[i] - nums[i - 1]) > threshold:
+            return True
+    return False.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+
+2026-03-30 19:40:12 - Error: .
+ Solution: from typing import List
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    nums = sorted(numbers, reverse=True)
+    for i in range(1, len(nums)):
+        if nums[i] - nums[i - 1] > threshold:
+            return True
+    return False.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+

@@ -22,8 +22,15 @@ class Terminal:
     """
 
     def __init__(self):
-        self.shell_command = ["bash"]  # FIXME: should consider windows support later
-        self.command_terminator = "\n"
+        # Windows support: use cmd.exe on Windows, bash on Unix-like systems
+        if os.name == 'nt':  # Windows
+            self.shell_command = ["cmd.exe"]
+            self.command_terminator = "\n"
+            self.shell_executable = "cmd.exe"
+        else:  # Unix-like (Linux, macOS)
+            self.shell_command = ["bash"]
+            self.command_terminator = "\n"
+            self.shell_executable = "bash"
         self.stdout_queue = Queue(maxsize=1000)
         self.observer = TerminalReporter()
         self.process: Optional[asyncio.subprocess.Process] = None
@@ -41,7 +48,7 @@ class Terminal:
             stdin=PIPE,
             stdout=PIPE,
             stderr=STDOUT,
-            executable="bash",
+            executable=self.shell_executable,
             env=os.environ.copy(),
             cwd=DEFAULT_WORKSPACE_ROOT.absolute(),
         )
@@ -51,7 +58,9 @@ class Terminal:
         """
         Check the state of the terminal, e.g. the current directory of the terminal process. Useful for agent to understand.
         """
-        output = await self.run_command("pwd")
+        # Windows: use 'echo %cd%' command, Unix-like: use 'pwd'
+        cmd = "echo %cd%" if os.name == 'nt' else "pwd"
+        output = await self.run_command(cmd)
         logger.info("The terminal is at:", output)
 
     async def run_command(self, cmd: str, daemon=False) -> str:
