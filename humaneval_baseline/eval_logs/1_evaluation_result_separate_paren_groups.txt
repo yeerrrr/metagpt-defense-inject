@@ -1,0 +1,61 @@
+Task: HumanEval/1
+Task Index: 1
+Entry Point: separate_paren_groups
+Code File: humaneval_baseline\separate_paren_groups.py
+Result: FAIL
+Details: Error: .
+ Solution: from typing import List
+def separate_paren_groups(paren_string: str) -> List[str]:
+    s = paren_string.strip()
+    groups: List[str] = []
+    depth = 0
+    start = 1
+    for i, ch in enumerate(s):
+        if ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+            if depth == 0:
+                groups.append(s[start:i+1])
+                start = i + 1
+    return groups.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('(()()) ((())) () ((())()())') == [
+        '(()())', '((()))', '()', '((())()())'
+    ]
+    assert candidate('() (()) ((())) (((())))') == [
+        '()', '(())', '((()))', '(((())))'
+    ]
+    assert candidate('(()(())((())))') == [
+        '(()(())((())))'
+    ]
+    assert candidate('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
+
+
+Generated Code:
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    s = paren_string.strip()
+    groups: List[str] = []
+    depth = 0
+    start = 1
+    for i, ch in enumerate(s):
+        if ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+            if depth == 0:
+                groups.append(s[start:i+1])
+                start = i + 1
+    return groups
+
