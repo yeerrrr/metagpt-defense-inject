@@ -13,22 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent / "human-eval"))
 # from select_humaneval_tasks import select_tasks_by_difficulty # type: ignore
 
 # Ensure an event loop exists before MetaGPT roles create asyncio primitives
-# asyncio.set_event_loop(asyncio.new_event_loop())
-
-def ensure_event_loop():
-    """
-    Ensure there's an asyncio event loop set for the current thread.
-    Some MetaGPT components (Pydantic factories / role setup) create
-    asyncio primitives during construction and require a loop to exist.
-    """
-    try:
-        asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-# Create a loop at import time to avoid "no current event loop" errors
-ensure_event_loop()
+asyncio.set_event_loop(asyncio.new_event_loop())
 
 def setup_task_logger(entry_point: str, log_dir: Path):
     """
@@ -73,8 +58,6 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         humaneval_path: HumanEval JSONL 文件路径
         log_dir: 日志目录（如果为None，使用 project_path/logs）
     """
-    # 确保事件循环存在（在每个任务开始前）
-    ensure_event_loop()
 
     # 设置任务日志目录
     log_dir = Path(project_path) / "logs"
@@ -216,7 +199,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.defense:
-        os.environ["METAGPT_DEFENSE_TYPE"] = args.defense.strip().lower()
+        os.environ["METAGPT_DEFENSE_TYPE"] = args.defense.strip()
 
     # 读取 HumanEval 
     humaneval_path = "../human-eval/data/HumanEval.jsonl" 
