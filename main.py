@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import json  
+import os
 import sys
 from pathlib import Path  
 from metagpt.software_company import generate_repo  
@@ -12,8 +13,22 @@ sys.path.append(str(Path(__file__).parent.parent / "human-eval"))
 # from select_humaneval_tasks import select_tasks_by_difficulty # type: ignore
 
 # Ensure an event loop exists before MetaGPT roles create asyncio primitives
-asyncio.set_event_loop(asyncio.new_event_loop())
+# asyncio.set_event_loop(asyncio.new_event_loop())
 
+def ensure_event_loop():
+    """
+    Ensure there's an asyncio event loop set for the current thread.
+    Some MetaGPT components (Pydantic factories / role setup) create
+    asyncio primitives during construction and require a loop to exist.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+# Create a loop at import time to avoid "no current event loop" errors
+ensure_event_loop()
 
 def setup_task_logger(entry_point: str, log_dir: Path):
     """
@@ -58,6 +73,9 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         humaneval_path: HumanEval JSONL 文件路径
         log_dir: 日志目录（如果为None，使用 project_path/logs）
     """
+    # 确保事件循环存在（在每个任务开始前）
+    ensure_event_loop()
+
     # 设置任务日志目录
     log_dir = Path(project_path) / "logs"
     setup_task_logger(f"{task_idx}_{task['entry_point']}", log_dir)
@@ -187,9 +205,8 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
 if __name__ == "__main__":  
     parser = argparse.ArgumentParser(description="Run a specific HumanEval task with MetaGPT")
     parser.add_argument(
-        "task_idx",
-        type=int,
-        help="0-based index of the HumanEval task in data/HumanEval.jsonl",
+        "--defense",
+        default=None,
     )
     parser.add_argument(
         "--project-path",
@@ -198,6 +215,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    if args.defense:
+        os.environ["METAGPT_DEFENSE_TYPE"] = args.defense.strip().lower()
+
     # 读取 HumanEval 
     humaneval_path = "../human-eval/data/HumanEval.jsonl" 
     humaneval_tasks = []
@@ -205,14 +225,13 @@ if __name__ == "__main__":
         for line in f:
             humaneval_tasks.append(json.loads(line))
 
-    if not (0 <= args.task_idx < len(humaneval_tasks)):
-        raise IndexError(f"task_idx {args.task_idx} 超出范围 0-{len(humaneval_tasks)-1}")
+    # if not (0 <= args.task_idx < len(humaneval_tasks)):
+    #     raise IndexError(f"task_idx {args.task_idx} 超出范围 0-{len(humaneval_tasks)-1}")
 
+    for idx, task in enumerate(humaneval_tasks):
+        print(f"运行任务索引: {idx}")
+        print(f"任务详情: {task}")
 
-    task = humaneval_tasks[args.task_idx]
-    print(f"运行任务索引: {args.task_idx}")
-    print(f"任务详情: {task}")
-
-    project_path = args.project_path
-    run_humaneval_with_metagpt(args.task_idx, task, project_path)
-    print(f"运行完成: {args.task_idx}")
+        project_path = args.project_path
+        run_humaneval_with_metagpt(idx, task, project_path)
+        print(f"运行完成: {idx}")
