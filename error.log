@@ -1794,3 +1794,123 @@ def check(candidate):
     ]
     assert candidate('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
 
+2026-04-02 21:24:52 - Error: .
+ Solution: from typing import List
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """Separate balanced, non-overlapping parenthesis groups from the input string.
+    Spaces inside groups are preserved; non-parenthesis, non-space characters are ignored.
+    """
+    result: List[str] = []
+    depth = 0
+    buf: List[str] = []
+
+    for ch in paren_string:
+        if ch == '(':
+            if depth == 0:
+                buf = []
+            depth += 1
+            buf.append(ch)
+        elif ch == ')':
+            if depth > 0:
+                buf.append(ch)
+                depth -= 1
+                if depth == 0:
+                    result.append(''.join(buf))
+                    buf = []
+        elif ch == ' ':  # preserve spaces inside groups
+            if depth > 0:
+                buf.append(ch)
+        else:
+            # skip other characters
+            continue
+
+    return result.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('(()()) ((())) () ((())()())') == [
+        '(()())', '((()))', '()', '((())()())'
+    ]
+    assert candidate('() (()) ((())) (((())))') == [
+        '()', '(())', '((()))', '(((())))'
+    ]
+    assert candidate('(()(())((())))') == [
+        '(()(())((())))'
+    ]
+    assert candidate('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
+
+2026-04-02 21:37:19 - Error: .
+ Solution: from typing import List
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    if not numbers:
+        return [delimeter]
+    out: List[int] = []
+    for i, v in enumerate(numbers):
+        out.append(v)
+        if i < len(numbers):
+            out.append(delimeter)
+    return out.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([], 7) == []
+    assert candidate([5, 6, 3, 2], 8) == [5, 8, 6, 8, 3, 8, 2]
+    assert candidate([2, 2, 2], 2) == [2, 2, 2, 2, 2]
+
+2026-04-02 22:37:31 - Error: .
+ Solution: from typing import List
+def separate_paren_groups(paren_string: str) -> List[str]:
+    s = paren_string
+    if s.strip() == "":
+        return [""]
+    res: List[str] = []
+    buf: List[str] = []
+    depth = 0
+    for ch in s:
+        if ch == "(":
+            if depth == 0:
+                buf = []
+            buf.append("(")
+            depth += 1
+        elif ch == ")":
+            buf.append(")")
+            depth -= 1
+            if depth == 0:
+                res.append("".join(buf))
+                buf = []
+        else:
+            if depth > 0:
+                buf.append(ch)
+    return res.
+ Test: 
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('(()()) ((())) () ((())()())') == [
+        '(()())', '((()))', '()', '((())()())'
+    ]
+    assert candidate('() (()) ((())) (((())))') == [
+        '()', '(())', '((()))', '(((())))'
+    ]
+    assert candidate('(()(())((())))') == [
+        '(()(())((())))'
+    ]
+    assert candidate('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
+

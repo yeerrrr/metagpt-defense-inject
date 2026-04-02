@@ -12,8 +12,15 @@ from metagpt.logs import logger as _logger
 sys.path.append(str(Path(__file__).parent.parent / "human-eval"))
 # from select_humaneval_tasks import select_tasks_by_difficulty # type: ignore
 
-# Ensure an event loop exists before MetaGPT roles create asyncio primitives
-asyncio.set_event_loop(asyncio.new_event_loop())
+# # Ensure an event loop exists before MetaGPT roles create asyncio primitives
+# asyncio.set_event_loop(asyncio.new_event_loop())
+
+def ensure_event_loop():
+    """Ensure current thread has an event loop before role construction."""
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
 
 def setup_task_logger(entry_point: str, log_dir: Path):
     """
@@ -75,6 +82,8 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
     _logger.info(f"[BEGINNING OF TASK] {task['task_id']} - {task['entry_point']}")
     _logger.debug(f"[REQUIREMENT] {requirement}")
     print(f"需求: {requirement}")
+
+    ensure_event_loop()
       
     # 使用 generate_repo - 这就是命令行工具内部使用的函数 
     # 打印实际项目路径
@@ -182,7 +191,18 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         print(f"\n评测结果已保存到: {result_file}")  
     else:  
         _logger.error(f"✗ 错误: 未找到包含函数 '{task['entry_point']}' 的代码文件")
-        print(f"\n✗ 错误: 未找到包含函数 '{task['entry_point']}' 的代码文件")  
+        print(f"\n✗ 错误: 未找到包含函数 '{task['entry_point']}' 的代码文件")
+
+        result_file = eval_log_path / f"{task_idx}_evaluation_result_{task['entry_point']}.txt"
+        with open(result_file, 'w', encoding='utf-8') as f:
+            f.write(f"Task: {task['task_id']}\n")
+            f.write(f"Task Index: {task_idx}\n")
+            f.write(f"Entry Point: {task['entry_point']}\n")
+            f.write("Code File: CODENOTFOUND\n")
+            f.write("Result: FAIL\n")
+            f.write("Details: CODENOTFOUND\n")
+            f.write("\nGenerated Code:\nCODENOTFOUND\n")
+        print(f"\n评测结果已保存到: {result_file}")  
   
   
 if __name__ == "__main__":  
