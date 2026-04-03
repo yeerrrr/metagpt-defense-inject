@@ -66,16 +66,20 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         log_dir: 日志目录（如果为None，使用 project_path/logs）
     """
 
+    project_dir = Path(project_path).resolve()
+    project_dir.mkdir(parents=True, exist_ok=True)
+
     # 设置任务日志目录
-    log_dir = Path(project_path) / "logs"
+    log_dir = project_dir / "logs"
     setup_task_logger(f"{task_idx}_{task['entry_point']}", log_dir)
-    print(f"project_path: {Path(project_path).resolve()}")
+    print(f"project_path: {project_dir}")
     requirement = f"""Write a Python function: {task['prompt']} 
         IMPORTANT REQUIREMENTS:  
         1. Save the code to a file named '{task['entry_point']}.py'  
-        2. The file must be saved in the project directory: "{project_path}"  
+        2. The file must be saved in the project directory: "{project_dir}"  
         3. The file should contain ONLY the function implementation with proper imports  
         4. Ensure the file is written to disk before completing the task  
+        5. This task runs on Windows. Do NOT use shell commands such as `mkdir -p`, `cp -r`, or similar Unix-only commands. Use direct file writes only. The target directory already exists.
         
         """ 
     
@@ -87,7 +91,7 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
       
     # 使用 generate_repo - 这就是命令行工具内部使用的函数 
     # 打印实际项目路径
-    print(f"指定项目路径: {Path(project_path).resolve()}")
+    print(f"指定项目路径: {project_dir}")
     generate_repo(  
         idea=requirement,  
         investment=3.0,  
@@ -97,23 +101,23 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
         implement=True,  
         project_name="humaneval_test",  
         inc=False,  
-        project_path=project_path,  
+        project_path=str(project_dir),  
         reqa_file="",  
         max_auto_summarize_code=0,  
         recover_path=None  
     )
       
-    if not Path(project_path).exists():  
-        raise Exception(f"错误: 项目路径不存在: {project_path}")
+    if not project_dir.exists():  
+        raise Exception(f"错误: 项目路径不存在: {project_dir}")
       
     # 列出项目文件结构  
     print("\n项目文件结构:")  
-    for file in Path(project_path).rglob("*"):  
+    for file in project_dir.rglob("*"):  
         if file.is_file():  
-            print(f"  {file.relative_to(project_path)}")  
+            print(f"  {file.relative_to(project_dir)}")  
       
     # 初始化评测器  
-    eval_log_path = Path(project_path) / "eval_logs"  
+    eval_log_path = project_dir / "eval_logs"  
     eval_log_path.mkdir(parents=True, exist_ok=True)  
       
     benchmark = HumanEvalBenchmark(  
@@ -124,7 +128,7 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
       
     # 搜索生成的代码  
     possible_paths = [  
-        Path(project_path) / f"{task['entry_point']}.py",  
+        project_dir / f"{task['entry_point']}.py",  
     ]  
     
     generated_code = None  
@@ -140,14 +144,14 @@ def run_humaneval_with_metagpt(task_idx, task, project_path):
       
     if not generated_code:  
         print(f"\n递归搜索所有Python文件...")  
-        for py_file in Path(project_path).rglob("*.py"):  
+        for py_file in project_dir.rglob("*.py"):  
             try:  
                 with open(py_file, 'r', encoding='utf-8') as f:  
                     content = f.read()  
                     if f"def {task['entry_point']}" in content:  
                         generated_code = content  
                         found_path = py_file  
-                        print(f"✓ 在 {py_file.relative_to(project_path)} 中找到函数")  
+                        print(f"✓ 在 {py_file.relative_to(project_dir)} 中找到函数")  
                         break  
             except Exception:  
                 continue  
@@ -212,6 +216,16 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
+        "--start",
+        type=int,
+        default=0,
+    )
+    parser.add_argument(
+        "--end",
+        type=int,
+        default=163,
+    )
+    parser.add_argument(
         "--project-path",
         default="./humaneval_baseline",
         help="Directory where MetaGPT will generate the project (default: ./humaneval_baseline)",
@@ -231,7 +245,8 @@ if __name__ == "__main__":
     # if not (0 <= args.task_idx < len(humaneval_tasks)):
     #     raise IndexError(f"task_idx {args.task_idx} 超出范围 0-{len(humaneval_tasks)-1}")
 
-    for idx, task in enumerate(humaneval_tasks):
+    for idx in range(args.start, args.end):
+        task = humaneval_tasks[idx]
         print(f"运行任务索引: {idx}")
         print(f"任务详情: {task}")
 

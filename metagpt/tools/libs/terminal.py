@@ -22,15 +22,20 @@ class Terminal:
     """
 
     def __init__(self):
-        # Windows support: use cmd.exe on Windows, bash on Unix-like systems
+        # Windows support: resolve cmd path robustly; use bash/shell on Unix-like systems
         if os.name == 'nt':  # Windows
-            self.shell_command = ["cmd.exe"]
+            comspec = os.environ.get("COMSPEC")
+            if not comspec:
+                system_root = os.environ.get("SystemRoot", r"C:\Windows")
+                comspec = os.path.join(system_root, "System32", "cmd.exe")
+            self.shell_command = [comspec]
             self.command_terminator = "\n"
-            self.shell_executable = "cmd.exe"
+            self.shell_executable = None
         else:  # Unix-like (Linux, macOS)
-            self.shell_command = ["bash"]
+            shell = os.environ.get("SHELL") or "/bin/bash"
+            self.shell_command = [shell]
             self.command_terminator = "\n"
-            self.shell_executable = "bash"
+            self.shell_executable = None
         self.stdout_queue = Queue(maxsize=1000)
         self.observer = TerminalReporter()
         self.process: Optional[asyncio.subprocess.Process] = None
@@ -43,14 +48,22 @@ class Terminal:
 
     async def _start_process(self):
         # Start a persistent shell process
+        cwd = DEFAULT_WORKSPACE_ROOT.absolute()
+        os.makedirs(cwd, exist_ok=True)
+
+        create_kwargs = {
+            "stdin": PIPE,
+            "stdout": PIPE,
+            "stderr": STDOUT,
+            "env": os.environ.copy(),
+            "cwd": cwd,
+        }
+        if self.shell_executable:
+            create_kwargs["executable"] = self.shell_executable
+
         self.process = await asyncio.create_subprocess_exec(
             *self.shell_command,
-            stdin=PIPE,
-            stdout=PIPE,
-            stderr=STDOUT,
-            executable=self.shell_executable,
-            env=os.environ.copy(),
-            cwd=DEFAULT_WORKSPACE_ROOT.absolute(),
+            **create_kwargs,
         )
         await self._check_state()
 
